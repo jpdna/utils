@@ -22,7 +22,6 @@ import org.apache.hadoop.io.compress.CompressionCodec
 import org.apache.hadoop.mapred.{ JobConf, OutputFormat }
 import org.apache.hadoop.mapreduce
 import org.apache.spark.Partitioner
-import org.apache.spark.SparkContext.rddToPairRDDFunctions
 import org.apache.spark.annotation.Experimental
 import org.apache.spark.partial.{ BoundedDouble, PartialResult }
 import org.apache.spark.rdd.InstrumentedPairRDDFunctions.setRecorder
@@ -151,13 +150,12 @@ class InstrumentedPairRDDFunctions[K, V](self: RDD[(K, V)])(implicit kt: ClassTa
     case _ => self.reduceByKeyLocally(func)
   }
 
-  @deprecated("Use reduceByKeyLocally")
   def reduceByKeyToDriver(func: (V, V) => V): Map[K, V] = self match {
     case instrumented: InstrumentedRDD[_] => recordOperation {
       implicit val recorder = functionRecorder()
-      self.reduceByKeyToDriver((v, v2) => recordFunction(func(v, v2)))
+      self.reduceByKeyLocally((v, v2) => recordFunction(func(v, v2)))
     }
-    case _ => self.reduceByKeyToDriver(func)
+    case _ => self.reduceByKeyLocally(func)
   }
 
   def countByKey(): Map[K, Long] = self match {

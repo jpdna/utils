@@ -17,7 +17,8 @@
  */
 package org.bdgenomics.utils.instrumentation
 
-import org.apache.spark.SparkContext.IntAccumulatorParam
+import org.apache.spark.AccumulatorParam.IntAccumulatorParam
+
 import org.bdgenomics.utils.misc.SparkFunSuite
 import org.scalatest.concurrent.{ Eventually, IntegrationPatience }
 
